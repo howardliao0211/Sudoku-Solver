@@ -19,15 +19,6 @@ class BoardViewModel(QtWidgets.QWidget):
         self.rows = 9
         self.cols = 9
         self.board = np.zeros((self.rows, self.cols))
-    
-    def stopSolver(self) -> None:
-        if hasattr(self, 'worker') and hasattr(self, 'thread'):
-            self.worker.finished.disconnect(self.thread.quit)
-            self.worker.finished.disconnect(self.worker.deleteLater)
-            self.thread.finished.disconnect(self.thread.deleteLater)
-            self.thread.quit()
-            self.worker.deleteLater()
-            self.thread.deleteLater()
 
     def startWorker(self, fn, *args, **kwargs) -> None:
         worker = Worker()

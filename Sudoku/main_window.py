@@ -31,7 +31,7 @@ class BoardMainWindow(QtWidgets.QMainWindow):
         self.solvePeriodSpinbox = QtWidgets.QSpinBox()
         self.solvePeriodSpinbox.setRange(0, 1000)
         self.solvePeriodSpinbox.setSingleStep(10)
-        self.solvePeriodSpinbox.setValue(100)
+        self.solvePeriodSpinbox.setValue(10)
         self.solveButton = QtWidgets.QPushButton('Solve')
 
         gl.addWidget(QtWidgets.QLabel('Empty percent:'), 0, 0)
@@ -44,14 +44,12 @@ class BoardMainWindow(QtWidgets.QMainWindow):
 
         self.clearButton = QtWidgets.QPushButton('Clear Board')
         self.editButton = QtWidgets.QPushButton('Edit Board')
-        self.stopButton = QtWidgets.QPushButton('Stop Solver')
 
         mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addWidget(self.board)
         mainLayout.addLayout(gl)
         mainLayout.addWidget(self.clearButton)
         mainLayout.addWidget(self.editButton)
-        mainLayout.addWidget(self.stopButton)
 
         wg = QtWidgets.QWidget()
         wg.setLayout(mainLayout)
@@ -62,9 +60,6 @@ class BoardMainWindow(QtWidgets.QMainWindow):
         self.solveButton.clicked.connect(self.solveButtonEvent)
         self.editButton.clicked.connect(self.editButtonEvent)
         self.viewModel.updateBoardSignal.connect(self.updateBoardEvent)
-
-    def stopSolverButtonEvent(self) -> None:
-        self.viewModel.stopSolver()
 
     def clearButtonEvent(self) -> None:
         self.viewModel.clearBoard()
