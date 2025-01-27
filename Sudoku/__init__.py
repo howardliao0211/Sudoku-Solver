@@ -1,1 +1,2 @@
-from Sudoku.board import Board
+from Sudoku.main_window import BoardMainWindow
+from Sudoku.view_model import BoardViewModel
