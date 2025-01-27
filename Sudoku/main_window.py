@@ -23,7 +23,7 @@ class BoardMainWindow(QtWidgets.QMainWindow):
 
         gl = QtWidgets.QGridLayout()
         self.emptyPercentSpinbox = QtWidgets.QDoubleSpinBox()
-        self.emptyPercentSpinbox.setRange(0, 1)
+        self.emptyPercentSpinbox.setRange(0, 0.9)
         self.emptyPercentSpinbox.setSingleStep(0.1)
         self.emptyPercentSpinbox.setValue(0.3)
         self.genButton = QtWidgets.QPushButton('Generate')
@@ -42,17 +42,53 @@ class BoardMainWindow(QtWidgets.QMainWindow):
         gl.addWidget(self.solvePeriodSpinbox, 1, 1)
         gl.addWidget(self.solveButton, 1, 2)
 
+        self.clearButton = QtWidgets.QPushButton('Clear Board')
+        self.editButton = QtWidgets.QPushButton('Edit Board')
+        self.stopButton = QtWidgets.QPushButton('Stop Solver')
+
         mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addWidget(self.board)
         mainLayout.addLayout(gl)
+        mainLayout.addWidget(self.clearButton)
+        mainLayout.addWidget(self.editButton)
+        mainLayout.addWidget(self.stopButton)
 
         wg = QtWidgets.QWidget()
         wg.setLayout(mainLayout)
         self.setCentralWidget(wg)
 
+        self.clearButton.clicked.connect(self.clearButtonEvent)
         self.genButton.clicked.connect(self.genButtonEvent)
         self.solveButton.clicked.connect(self.solveButtonEvent)
+        self.editButton.clicked.connect(self.editButtonEvent)
         self.viewModel.updateBoardSignal.connect(self.updateBoardEvent)
+
+    def stopSolverButtonEvent(self) -> None:
+        self.viewModel.stopSolver()
+
+    def clearButtonEvent(self) -> None:
+        self.viewModel.clearBoard()
+
+    def editButtonEvent(self) -> None:
+        if self.editButton.text() == 'Edit Board':
+            self.editButton.setText('Stop Edit')
+
+            for i in range(9):
+                for j in range(9):
+                    self.board.cells[i][j].setEnabled(True)
+            
+            self.genButton.setEnabled(False)
+            self.solveButton.setEnabled(False)
+        else:
+            self.editButton.setText('Edit Board')
+
+            for i in range(9):
+                for j in range(9):
+                    if self.board.cells[i][j].text() != '':
+                        self.viewModel.editBoard(self.viewModel.board, i, j, int(self.board.cells[i][j].text()), False)
+
+            self.genButton.setEnabled(True)
+            self.solveButton.setEnabled(True)
 
     def genButtonEvent(self) -> None:
         emptyPercent = self.emptyPercentSpinbox.value()

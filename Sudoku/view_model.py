@@ -20,6 +20,15 @@ class BoardViewModel(QtWidgets.QWidget):
         self.cols = 9
         self.board = np.zeros((self.rows, self.cols))
     
+    def stopSolver(self) -> None:
+        if hasattr(self, 'worker') and hasattr(self, 'thread'):
+            self.worker.finished.disconnect(self.thread.quit)
+            self.worker.finished.disconnect(self.worker.deleteLater)
+            self.thread.finished.disconnect(self.thread.deleteLater)
+            self.thread.quit()
+            self.worker.deleteLater()
+            self.thread.deleteLater()
+
     def startWorker(self, fn, *args, **kwargs) -> None:
         worker = Worker()
         worker.setFunction(fn, *args, **kwargs)
@@ -77,10 +86,7 @@ class BoardViewModel(QtWidgets.QWidget):
             if stepPeriodMs > 0:
                 QtCore.QThread.msleep(stepPeriodMs)
 
-            info = BoardUpdateInfo(row, col, choice, True)
-            self.updateBoardSignal.emit(info)
-
-            newBoard[row][col] = choice
+            self.editBoard(newBoard, row, col, choice, True)
             res = self.solveStep(newBoard, coordToSolve, i + 1, stepPeriodMs)
             if res:
                 return True
@@ -88,9 +94,7 @@ class BoardViewModel(QtWidgets.QWidget):
             if stepPeriodMs > 0:
                 QtCore.QThread.msleep(stepPeriodMs)
 
-            newBoard[row][col] = self.board[row][col]
-            info.val = self.board[row][col]
-            self.updateBoardSignal.emit(info)
+            self.editBoard(newBoard, row, col, int(self.board[row][col]), True)
         
         return False
 
@@ -118,8 +122,7 @@ class BoardViewModel(QtWidgets.QWidget):
         
         for row in range(self.rows):
             for col in range(self.cols):
-                info = BoardUpdateInfo(row, col, self.board[row][col], True if self.board[row][col] == 0 else False)
-                self.updateBoardSignal.emit(info)
+                self.editBoard(self.board, row, col, int(self.board[row][col]), False)
 
 
     def genStep(self, newBoard: np.ndarray, validCoordinate: List[int], i: int) -> bool:
@@ -144,8 +147,12 @@ class BoardViewModel(QtWidgets.QWidget):
     def clearBoard(self) -> None:
         for i in range(self.rows):
             for j in range(self.cols):
-                self.updateBoardSignal.emit(BoardUpdateInfo(i, j, 0, True))
-                self.board[i][j] = 0
+                self.editBoard(self.board, i, j, 0, True)
+
+    def editBoard(self, board: np.ndarray, row: int, col: int, val: int, isEnable: bool) -> None:
+        board[row][col] = val
+        info = BoardUpdateInfo(row, col, val, isEnable)
+        self.updateBoardSignal.emit(info)
 
     def printBoard(self, name: str = '') -> None:
         self.printAnyBoard(self.board, name)
