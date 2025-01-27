@@ -29,6 +29,6 @@ This is a Python program that solves Sudoku puzzles using a backtracking algorit
 
 Here is an example of the program works
 
-![Sudoku Solver Demo](resources\demo.gif)
+![Sudoku-Solver](https://github.com/howardliao0211/Sudoku-Solver/blob/main/resources/demo.gif)
 
 
