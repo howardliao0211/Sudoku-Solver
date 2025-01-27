@@ -81,6 +81,8 @@ class BoardMainWindow(QtWidgets.QMainWindow):
                 for j in range(9):
                     if self.board.cells[i][j].text() != '':
                         self.viewModel.editBoard(self.viewModel.board, i, j, int(self.board.cells[i][j].text()), False)
+                    else:
+                        self.viewModel.editBoard(self.viewModel.board, i, j, 0, True)
 
             self.genButton.setEnabled(True)
             self.solveButton.setEnabled(True)
